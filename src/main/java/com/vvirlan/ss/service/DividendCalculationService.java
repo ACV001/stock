@@ -3,6 +3,7 @@ package com.vvirlan.ss.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.vvirlan.ss.StockNotFoundException;
 import com.vvirlan.ss.model.Stock;
 
 public interface DividendCalculationService {
@@ -10,13 +11,16 @@ public interface DividendCalculationService {
 	/**
 	 * Calculate Dividend Yield given a {@code Stock} and the price
 	 *
-	 * @param stock
-	 *            {@code Stock} to calculate the dividend yield for
+	 * @param stockName
+	 *            {@code String} the name of the stock to calculate the dividend
+	 *            yield for
 	 * @param price
 	 *            {@code Stock} price. Assumption: price is in dollars
 	 * @return the calculated dividend yield in dollars
+	 * @throws StockNotFoundException
+	 *             if the stock was not found
 	 */
-	public BigDecimal calculateDividendYield(Stock stock, BigDecimal price);
+	public BigDecimal calculateDividendYield(String stockName, BigDecimal price) throws StockNotFoundException;
 
 	/**
 	 * Calculates the P/E Ratio according to this formulae: P/E Ration = Price /

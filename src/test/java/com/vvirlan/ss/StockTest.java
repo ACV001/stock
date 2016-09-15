@@ -1,4 +1,4 @@
-package simplestock;
+package com.vvirlan.ss;
 
 import static org.junit.Assert.*;
 
