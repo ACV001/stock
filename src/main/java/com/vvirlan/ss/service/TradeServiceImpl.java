@@ -1,5 +1,6 @@
 package com.vvirlan.ss.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.vvirlan.ss.model.Trade;
@@ -15,27 +16,32 @@ public class TradeServiceImpl implements TradeService {
 	}
 
 	@Override
-	public boolean recordTrade(final Trade trade) {
-		// TODO Auto-generated method stub
-		return false;
+	public void recordTrade(final Trade trade) {
+		if (trade == null) {
+			throw new IllegalArgumentException("Trade cannot be null");
+		}
+		// No further validations needed because Trade is an immutable class
+		// and all validations happen in Trade constructor
+		tradeRepository.recordTrade(trade);
 	}
 
 	@Override
-	public List<Trade> getAllTrades() {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Trade> getAllTrades() {
+
+		return tradeRepository.getAllTrades();
 	}
 
 	@Override
 	public List<Trade> findTradeBySymbol(final String stockSymbol) {
-		// TODO Auto-generated method stub
-		return null;
+		return tradeRepository.findTradesBySymbol(stockSymbol);
 	}
 
 	@Override
 	public List<Trade> findTradesInPastMinutes(final int pastMinutes) {
-		// TODO Auto-generated method stub
-		return null;
+		if (pastMinutes <= 0) {
+			throw new IllegalArgumentException("Past minutes must be >=0 !");
+		}
+		return tradeRepository.findTradesInPastMinutes(pastMinutes);
 	}
 
 }

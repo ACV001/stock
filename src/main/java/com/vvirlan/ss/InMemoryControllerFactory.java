@@ -15,42 +15,53 @@ import com.vvirlan.ss.service.TradeServiceImpl;
 
 public class InMemoryControllerFactory extends ControllerFactory {
 
+	private static ControllerFactory instance;
+
+	public static ControllerFactory getInstance() {
+		synchronized (InMemoryControllerFactory.class) {
+			if (instance == null) {
+				instance = new InMemoryControllerFactory();
+			}
+		}
+		return instance;
+	}
+
 	@Override
-	public TradeRepository getTradeRepositoryInstance() {
+	protected TradeRepository getTradeRepositoryInstance() {
 		return new InMemoryTradeRepository();
 	}
 
 	@Override
-	public SimpleStockController getController(final TradeService tradeService,
+	protected SimpleStockController getController(final TradeService tradeService,
 			final DividendCalculationService dividendCalculatorService, final StockService stockService) {
 		return new SimpleStockControllerImpl(dividendCalculatorService, tradeService, stockService);
 
 	}
 
 	@Override
-	public TradeService getTradeService(final TradeRepository tradeRepository) {
+	protected TradeService getTradeService(final TradeRepository tradeRepository) {
 		return new TradeServiceImpl(tradeRepository);
 	}
 
 	@Override
-	public SimpleStockController getController() {
-		return instance;
+	protected SimpleStockController getController() {
+		return stockControllerInstance;
 	}
 
 	@Override
-	public StockRepository getStockRepositoryInstance() {
+	protected StockRepository getStockRepositoryInstance() {
 		return new InMemoryStockRepository();
 	}
 
 	@Override
-	public DividendCalculationService getDividendCalculatorService(final StockRepository stockRepository) {
+	protected DividendCalculationService getDividendCalculatorService(final StockRepository stockRepository) {
 
 		return new DividendCalculationServiceImpl(stockRepository);
 
 	}
 
 	@Override
-	public StockService getStockService(final StockRepository stockRepo) {
+	protected StockService getStockService(final StockRepository stockRepo) {
 
 		return new StockServiceImpl(stockRepo);
 	}

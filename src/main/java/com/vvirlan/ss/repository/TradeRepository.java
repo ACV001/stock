@@ -1,5 +1,6 @@
 package com.vvirlan.ss.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.vvirlan.ss.model.Trade;
@@ -14,14 +15,14 @@ public interface TradeRepository {
 	 *            {@code IllegalArgumentException} will be thrown
 	 * @return {@code true} if the operation succeeded
 	 */
-	boolean recordTrade(Trade trade);
+	void recordTrade(Trade trade);
 
 	/**
 	 * Get all the recorded trades
 	 *
-	 * @return a list of trades. Never null
+	 * @return a collection of trades. Never null
 	 */
-	List<Trade> getAllTrades();
+	Collection<Trade> getAllTrades();
 
 	/**
 	 * Find a specific {@code Trade} by symbol
@@ -29,10 +30,9 @@ public interface TradeRepository {
 	 * @param stockSymbol
 	 *            a {@code String} representing the stock symbol to search the
 	 *            trade by
-	 * @return a {@code Trade} found or if not found throws
-	 *         {@code IllegalArgumentException}
+	 * @return a List of {@code Trade} found or if not found an empty list
 	 */
-	Trade findTradeBySymbol(String stockSymbol);
+	List<Trade> findTradesBySymbol(String stockSymbol);
 
 	/**
 	 * Finds all trades that have their timestamp in the range of the past

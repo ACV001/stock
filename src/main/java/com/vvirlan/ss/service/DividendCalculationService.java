@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.vvirlan.ss.StockNotFoundException;
-import com.vvirlan.ss.model.Stock;
+import com.vvirlan.ss.ZeroDividendYieldException;
 
 public interface DividendCalculationService {
 
@@ -26,13 +26,16 @@ public interface DividendCalculationService {
 	 * Calculates the P/E Ratio according to this formulae: P/E Ration = Price /
 	 * Dividend
 	 *
-	 * @param stock
-	 *            {@code Stock} to calculate P/E for
+	 * @param stockSymbol
+	 *            {@code String} to calculate P/E for
 	 * @param price
 	 *            the price. Assumption: price is in dollars
 	 * @return P/E ratio
+	 * @throws StockNotFoundException
+	 * @throws ZeroDividendYieldException
 	 */
-	public BigDecimal calculatePeRatio(Stock stock, BigDecimal price);
+	public BigDecimal calculatePeRatio(String stockName, BigDecimal price)
+			throws StockNotFoundException, ZeroDividendYieldException;
 
 	/**
 	 * Calculates the geometric mean of the GBCE All Share index

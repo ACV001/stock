@@ -31,6 +31,16 @@ public final class Stock {
 			throw new IllegalArgumentException("Fixed dividend cannot be null!");
 		}
 
+		// Assumption - Last Dividend cannot be < 0.
+		if (lastDividend < 0) {
+			throw new IllegalArgumentException("Last dividend cannot be negative!");
+		}
+
+		// Assumption - Fixed Dividend cannot be < 0.
+		if (fixedDividend.compareTo(BigDecimal.ZERO) < 0) {
+			throw new IllegalArgumentException("Fixed dividend cannot be negative!");
+		}
+
 		this.symbol = symbol;
 		this.type = type;
 		this.lastDividend = lastDividend;

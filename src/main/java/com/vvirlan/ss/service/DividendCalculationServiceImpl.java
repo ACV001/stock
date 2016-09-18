@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.List;
 
 import com.vvirlan.ss.StockNotFoundException;
+import com.vvirlan.ss.ZeroDividendYieldException;
 import com.vvirlan.ss.model.Stock;
 import com.vvirlan.ss.model.StockType;
 import com.vvirlan.ss.repository.StockRepository;
@@ -27,6 +28,8 @@ public class DividendCalculationServiceImpl implements DividendCalculationServic
 	@Override
 	public BigDecimal calculateDividendYield(final String stockSymbol, final BigDecimal price)
 			throws StockNotFoundException {
+		validateStockSymbolAndPrice(stockSymbol, price);
+
 		// 1. Find first the Stock by stockName
 		final Stock stock = stockRepository.findStock(stockSymbol);
 		// We'll be throwing exceptions from here rather than from repository
@@ -38,31 +41,58 @@ public class DividendCalculationServiceImpl implements DividendCalculationServic
 		BigDecimal result = null;
 		if (StockType.COMMON.equals(stock.getType())) {
 			final BigDecimal lastDividend = new BigDecimal(stock.getLastDividend());
-			result = lastDividend.divide(price, 4, RoundingMode.HALF_UP);
+			result = lastDividend.divide(price, 4, RoundingMode.HALF_EVEN);
 		} else {
 			final BigDecimal fixedDividend = stock.getFixedDividend();
 			final BigDecimal parValue = new BigDecimal(stock.getParValue());
-			result = fixedDividend.multiply(parValue).divide(price, 4, RoundingMode.HALF_UP);
+			result = fixedDividend.multiply(parValue).divide(price, 4, RoundingMode.HALF_EVEN);
 		}
 		return result;
 	}
 
 	@Override
-	public BigDecimal calculatePeRatio(final Stock stock, final BigDecimal price) {
-		// TODO Auto-generated method stub
-		return null;
+	public BigDecimal calculatePeRatio(final String stockSymbol, final BigDecimal price)
+			throws StockNotFoundException, ZeroDividendYieldException {
+		validateStockSymbolAndPrice(stockSymbol, price);
+		final BigDecimal dividendYield = calculateDividendYield(stockSymbol, price);
+		if (dividendYield.compareTo(BigDecimal.ZERO) == 0) {
+			throw new ZeroDividendYieldException("Dividend Yield is zero. Cannot calculate P/E ratio");
+		}
+		return price.divide(dividendYield);
 	}
 
 	@Override
 	public BigDecimal calculateGeometricMean(final List<BigDecimal> prices) {
-		// TODO Auto-generated method stub
-		return null;
+
+		if (prices == null || prices.isEmpty()) {
+			throw new IllegalArgumentException("The list of prices cannot be null nor empty!");
+		}
+
+		final int n = prices.size();
+		final BigDecimal product = prices.stream().reduce(new BigDecimal("1"), (x, y) -> x.multiply(y));
+		final double pow = 1 / (double) n;
+		final double result = Math.pow(product.doubleValue(), pow);
+		return BigDecimal.valueOf(result);
 	}
 
 	@Override
 	public BigDecimal calculateVolumeWeightedStockPrice(final List<BigDecimal> tradedPrices, final List<Integer> qty) {
-		// TODO Auto-generated method stub
-		return null;
+		final Long sumQty = qty.stream().mapToLong(Integer::intValue).sum();
+		final BigDecimal total = new BigDecimal("0");
+		for (int i = 0; i < tradedPrices.size(); i++) {
+			total.add(tradedPrices.get(i).multiply(BigDecimal.valueOf(qty.get(i))));
+		}
+		return total.divide(BigDecimal.valueOf(sumQty));
+	}
+
+	private void validateStockSymbolAndPrice(final String stockSymbol, final BigDecimal price) {
+		if (stockSymbol == null || stockSymbol.isEmpty()) {
+			throw new IllegalArgumentException("Stock Symbol cannot be null nor empty!");
+		}
+
+		if (price == null || price.compareTo(BigDecimal.ZERO) == 0) {
+			throw new IllegalArgumentException("Price cannot be null nor zero!");
+		}
 	}
 
 }

@@ -1,6 +1,11 @@
 package com.vvirlan.ss.repository;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.vvirlan.ss.model.Trade;
 
@@ -11,29 +16,44 @@ import com.vvirlan.ss.model.Trade;
  *
  */
 public class InMemoryTradeRepository implements TradeRepository {
+	private final Map<Long, Trade> store = new ConcurrentHashMap<>();
 
 	@Override
-	public boolean recordTrade(final Trade trade) {
-		// TODO Auto-generated method stub
-		return false;
+	public void recordTrade(final Trade trade) {
+		if (trade == null) {
+			throw new IllegalArgumentException("Trade to record cannot be null!");
+		}
+		store.put(trade.getTimestamp(), trade);
 	}
 
 	@Override
-	public List<Trade> getAllTrades() {
-		// TODO Auto-generated method stub
-		return null;
+	public Collection<Trade> getAllTrades() {
+		return store.values();
 	}
 
 	@Override
 	public List<Trade> findTradesInPastMinutes(final int pastMinutes) {
-		// TODO Auto-generated method stub
-		return null;
+		final Date now = new Date();
+		final long pastMinutesAsMs = pastMinutes * 60 * 1000;
+		final long delta = now.getTime() - pastMinutesAsMs;
+		final List<Trade> tradesInPastMinutes = new ArrayList<>();
+		for (final Long timestamp : store.keySet()) {
+			if (timestamp >= delta && timestamp <= now.getTime()) {
+				tradesInPastMinutes.add(store.get(timestamp));
+			}
+		}
+		return tradesInPastMinutes;
 	}
 
 	@Override
-	public Trade findTradeBySymbol(final String stockSymbol) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Trade> findTradesBySymbol(final String stockSymbol) {
+		final List<Trade> results = new ArrayList<>();
+		for (final Trade t : store.values()) {
+			if (t.getStock().getSymbol().equals(stockSymbol)) {
+				results.add(t);
+			}
+		}
+		return results;
 	}
 
 }

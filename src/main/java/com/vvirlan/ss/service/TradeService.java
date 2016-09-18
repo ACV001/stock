@@ -1,14 +1,15 @@
 package com.vvirlan.ss.service;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.vvirlan.ss.model.Trade;
 
 public interface TradeService {
 
-	boolean recordTrade(Trade trade);
+	void recordTrade(Trade trade);
 
-	List<Trade> getAllTrades();
+	Collection<Trade> getAllTrades();
 
 	List<Trade> findTradeBySymbol(String stockSymbol);
 

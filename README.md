@@ -19,3 +19,10 @@ The application is layered in 3 tiers:
 2. Next we define the interfaces for our Repository layer and Service Layer.
 3. Next we switch on to unit tests and employing Test Driven Development, starting to implement the layers step by step.
 
+
+Tools Used
+1. Java SE
+2. Maven
+3. Eclipse
+4. Plugin Eclemma for code coverage
+5. Plugin findBugs for problematic code

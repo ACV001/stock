@@ -9,7 +9,7 @@ import com.vvirlan.ss.service.TradeService;
 
 public abstract class ControllerFactory {
 
-	protected SimpleStockController instance;
+	protected SimpleStockController stockControllerInstance;
 
 	public ControllerFactory() {
 		final TradeRepository tradeRepo = getTradeRepositoryInstance();
@@ -17,22 +17,22 @@ public abstract class ControllerFactory {
 		final TradeService tradeService = getTradeService(tradeRepo);
 		final StockService stockService = getStockService(stockRepo);
 		final DividendCalculationService dividendCalculatorService = getDividendCalculatorService(stockRepo);
-		instance = getController(tradeService, dividendCalculatorService, stockService);
+		stockControllerInstance = getController(tradeService, dividendCalculatorService, stockService);
 
 	}
 
-	public abstract StockService getStockService(StockRepository stockRepo);
+	protected abstract StockService getStockService(StockRepository stockRepo);
 
-	public abstract StockRepository getStockRepositoryInstance();
+	protected abstract StockRepository getStockRepositoryInstance();
 
-	public abstract SimpleStockController getController(final TradeService tradeService,
+	protected abstract SimpleStockController getController(final TradeService tradeService,
 			final DividendCalculationService dividendCalculatorService, StockService stockService);
 
-	public abstract TradeRepository getTradeRepositoryInstance();
+	protected abstract TradeRepository getTradeRepositoryInstance();
 
-	public abstract TradeService getTradeService(TradeRepository repo);
+	protected abstract TradeService getTradeService(TradeRepository repo);
 
-	public abstract DividendCalculationService getDividendCalculatorService(StockRepository stockRepository);
+	protected abstract DividendCalculationService getDividendCalculatorService(StockRepository stockRepository);
 
-	public abstract SimpleStockController getController();
+	protected abstract SimpleStockController getController();
 }

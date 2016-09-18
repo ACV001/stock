@@ -1,6 +1,8 @@
 package com.vvirlan.ss;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import com.vvirlan.ss.controller.SimpleStockController;
 
@@ -18,27 +20,28 @@ public class SimpleStockApplication {
 		// 1. Need to bootstrap the application. Instantiate all layers and
 		// inject them as needed
 
-		// final DividendCalculationService dividendCalculationService = new
-		// DividendCalculationServiceImpl();
-		// final TradeRepository tradeRepository = new
-		// InMemoryTradeRepository();
-		// final TradeService tradeService = new
-		// TradeServiceImpl(tradeRepository);
-		// final SimpleStockController controller = new
-		// SimpleStockController(dividendCalculationService, tradeService);
-		// controller.calculateDividendYield(stockSymbol, price)
-		final ControllerFactory factory = new InMemoryControllerFactory();
+		final ControllerFactory factory = InMemoryControllerFactory.getInstance();
 		final SimpleStockController controller = factory.getController();
 
-		controller.createStock("ABS", "COMMON", 2, new BigDecimal("0"), 100L);
+		setupStocks(controller);
 
-		BigDecimal result = null;
+		Future<BigDecimal> result = null;
 		try {
-			result = controller.calculateDividendYield("ABS", new BigDecimal("22.3"));
-			System.out.println(result);
-		} catch (final StockNotFoundException e) {
+			result = controller.calculateDividendYield("POP", new BigDecimal("22.3"));
+
+			System.out.println(result.get());
+		} catch (InterruptedException | ExecutionException | StockNotFoundException e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	private void setupStocks(final SimpleStockController controller) {
+		controller.createStock("TEA", "COMMON", 0, new BigDecimal("0"), 100L);
+		controller.createStock("POP", "COMMON", 8, new BigDecimal("0"), 100L);
+		controller.createStock("ALE", "COMMON", 23, new BigDecimal("0"), 60L);
+		controller.createStock("GIN", "PREFERRED", 8, new BigDecimal("0.02"), 100L); // 2%
+		controller.createStock("JOE", "COMMON", 13, new BigDecimal("0"), 250L);
 
 	}
 }

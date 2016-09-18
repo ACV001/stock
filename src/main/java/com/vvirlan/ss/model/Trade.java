@@ -4,7 +4,6 @@
 package com.vvirlan.ss.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * The Trade entity
@@ -13,16 +12,22 @@ import java.util.Date;
  *
  */
 public class Trade {
-	private final Date timestamp;
+	private final Stock stock;
+	private final long timestamp;
 	private final long qty;
 	private final BigDecimal price;
 	private final TradeType tradeType;
 
-	public Trade(final Date timestamp, final long qty, final BigDecimal price, final TradeType tradeType) {
+	public Trade(final Stock stock, final long timestamp, final long qty, final BigDecimal price,
+			final TradeType tradeType) {
 		super();
 
-		if (timestamp == null) {
-			throw new IllegalArgumentException("Timestamp cannot be null!");
+		if (stock == null) {
+			throw new IllegalArgumentException("Stock cannot be null!");
+		}
+
+		if (timestamp <= 0L) {
+			throw new IllegalArgumentException("Timestamp cannot be negative or zero!");
 		}
 
 		if (price == null) {
@@ -33,13 +38,14 @@ public class Trade {
 			throw new IllegalArgumentException("Trade Type cannot be null!");
 		}
 
+		this.stock = stock;
 		this.timestamp = timestamp;
 		this.qty = qty;
 		this.price = price;
 		this.tradeType = tradeType;
 	}
 
-	public Date getTimestamp() {
+	public long getTimestamp() {
 		return timestamp;
 	}
 
@@ -55,25 +61,33 @@ public class Trade {
 		return tradeType;
 	}
 
+	/**
+	 * @return the stock
+	 */
+	public Stock getStock() {
+		return stock;
+	}
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + price.hashCode();
+		result = prime * result + (price == null ? 0 : price.hashCode());
 		result = prime * result + (int) (qty ^ qty >>> 32);
-		result = prime * result + timestamp.hashCode();
-		result = prime * result + tradeType.hashCode();
+		result = prime * result + (stock == null ? 0 : stock.hashCode());
+		result = prime * result + (int) (timestamp ^ timestamp >>> 32);
+		result = prime * result + (tradeType == null ? 0 : tradeType.hashCode());
 		return result;
 	}
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -98,11 +112,14 @@ public class Trade {
 		if (qty != other.qty) {
 			return false;
 		}
-		if (timestamp == null) {
-			if (other.timestamp != null) {
+		if (stock == null) {
+			if (other.stock != null) {
 				return false;
 			}
-		} else if (!timestamp.equals(other.timestamp)) {
+		} else if (!stock.equals(other.stock)) {
+			return false;
+		}
+		if (timestamp != other.timestamp) {
 			return false;
 		}
 		if (tradeType != other.tradeType) {
@@ -111,9 +128,15 @@ public class Trade {
 		return true;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
-		return "Trade [timestamp=" + timestamp + ", qty=" + qty + ", price=" + price + ", tradeType=" + tradeType + "]";
+		return "Trade [stock=" + stock + ", timestamp=" + timestamp + ", qty=" + qty + ", price=" + price
+				+ ", tradeType=" + tradeType + "]";
 	}
 
 }
