@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
@@ -29,6 +30,47 @@ public class DividendCalculationServiceImplTest {
 		stockService = new StockServiceImpl(stockRepository);
 		TestUtils.createStocks(stockService);
 
+	}
+
+	@Test
+	public void calculateVolumeWeightedStockPricePos() {
+		final List<BigDecimal> prices = new ArrayList<>();
+		prices.add(new BigDecimal("1.5"));
+		prices.add(new BigDecimal("2.5"));
+
+		final List<Integer> qtys = new ArrayList<>();
+		qtys.add(new Integer(2));
+		qtys.add(new Integer(3));
+
+		final BigDecimal result = dividendCalculationService.calculateVolumeWeightedStockPrice(prices, qtys);
+		assertEquals(0, result.compareTo(new BigDecimal("2.1")));
+
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void calculateVolumeWeightedStockPriceNeg4() {
+		dividendCalculationService.calculateVolumeWeightedStockPrice(Arrays.asList(), Arrays.asList(new Integer("1")));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void calculateVolumeWeightedStockPriceNeg3() {
+		dividendCalculationService.calculateVolumeWeightedStockPrice(Arrays.asList(new BigDecimal("0")), null);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void calculateVolumeWeightedStockPriceNeg2() {
+		dividendCalculationService.calculateVolumeWeightedStockPrice(Arrays.asList(new BigDecimal("0")),
+				Arrays.asList());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void calculateVolumeWeightedStockPriceNeg1() {
+		dividendCalculationService.calculateVolumeWeightedStockPrice(null, Arrays.asList(new Integer("1")));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void calculateVolumeWeightedStockPriceNeg() {
+		dividendCalculationService.calculateVolumeWeightedStockPrice(null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

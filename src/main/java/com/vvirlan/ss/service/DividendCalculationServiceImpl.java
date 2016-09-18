@@ -77,10 +77,19 @@ public class DividendCalculationServiceImpl implements DividendCalculationServic
 
 	@Override
 	public BigDecimal calculateVolumeWeightedStockPrice(final List<BigDecimal> tradedPrices, final List<Integer> qty) {
+
+		if (tradedPrices == null || tradedPrices.isEmpty()) {
+			throw new IllegalArgumentException("Traded prices cannot be null nor empty");
+		}
+
+		if (qty == null || qty.isEmpty()) {
+			throw new IllegalArgumentException("Qtys cannot be null nor empty");
+		}
+
 		final Long sumQty = qty.stream().mapToLong(Integer::intValue).sum();
-		final BigDecimal total = new BigDecimal("0");
+		BigDecimal total = new BigDecimal("0");
 		for (int i = 0; i < tradedPrices.size(); i++) {
-			total.add(tradedPrices.get(i).multiply(BigDecimal.valueOf(qty.get(i))));
+			total = total.add(tradedPrices.get(i).multiply(BigDecimal.valueOf(qty.get(i))));
 		}
 		return total.divide(BigDecimal.valueOf(sumQty));
 	}

@@ -3,6 +3,7 @@ package com.vvirlan.ss;
 import java.math.BigDecimal;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import com.vvirlan.ss.controller.SimpleStockController;
 
@@ -24,14 +25,24 @@ public class SimpleStockApplication {
 		final SimpleStockController controller = factory.getController();
 
 		setupStocks(controller);
+		while (true) {
+			final Thread th = new Thread(() -> {
+				Future<BigDecimal> result = null;
+				try {
+					result = controller.calculateDividendYield("POP", new BigDecimal("22.3"));
 
-		Future<BigDecimal> result = null;
-		try {
-			result = controller.calculateDividendYield("POP", new BigDecimal("22.3"));
+					System.out.println("Thread " + Thread.currentThread().getName() + " = " + result.get());
+				} catch (InterruptedException | ExecutionException | StockNotFoundException e) {
+					e.printStackTrace();
+				}
 
-			System.out.println(result.get());
-		} catch (InterruptedException | ExecutionException | StockNotFoundException e) {
-			e.printStackTrace();
+			});
+			th.start();
+			try {
+				TimeUnit.MILLISECONDS.sleep(100);
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 
 	}
