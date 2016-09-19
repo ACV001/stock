@@ -10,9 +10,9 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.vvirlan.ss.StockNotFoundException;
 import com.vvirlan.ss.TestUtils;
-import com.vvirlan.ss.ZeroDividendYieldException;
+import com.vvirlan.ss.exception.StockNotFoundException;
+import com.vvirlan.ss.exception.ZeroDividendYieldException;
 import com.vvirlan.ss.repository.InMemoryStockRepository;
 import com.vvirlan.ss.repository.StockRepository;
 

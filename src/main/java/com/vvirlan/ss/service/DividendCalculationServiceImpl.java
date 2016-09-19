@@ -4,8 +4,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-import com.vvirlan.ss.StockNotFoundException;
-import com.vvirlan.ss.ZeroDividendYieldException;
+import com.vvirlan.ss.exception.StockNotFoundException;
+import com.vvirlan.ss.exception.ZeroDividendYieldException;
 import com.vvirlan.ss.model.Stock;
 import com.vvirlan.ss.model.StockType;
 import com.vvirlan.ss.repository.StockRepository;

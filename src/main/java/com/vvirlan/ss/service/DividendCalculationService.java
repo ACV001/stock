@@ -3,8 +3,8 @@ package com.vvirlan.ss.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.vvirlan.ss.StockNotFoundException;
-import com.vvirlan.ss.ZeroDividendYieldException;
+import com.vvirlan.ss.exception.StockNotFoundException;
+import com.vvirlan.ss.exception.ZeroDividendYieldException;
 
 public interface DividendCalculationService {
 

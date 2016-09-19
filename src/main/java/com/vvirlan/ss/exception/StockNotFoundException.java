@@ -1,4 +1,4 @@
-package com.vvirlan.ss;
+package com.vvirlan.ss.exception;
 
 public class StockNotFoundException extends Exception {
 

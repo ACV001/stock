@@ -6,6 +6,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import com.vvirlan.ss.controller.SimpleStockController;
+import com.vvirlan.ss.exception.StockNotFoundException;
 
 public class SimpleStockApplication {
 
@@ -25,21 +26,44 @@ public class SimpleStockApplication {
 		final SimpleStockController controller = factory.getController();
 
 		setupStocks(controller);
+		//Emulate multiple parallel requests...
 		while (true) {
+
+			// calculateDividendYield
 			final Thread th = new Thread(() -> {
 				Future<BigDecimal> result = null;
 				try {
 					result = controller.calculateDividendYield("POP", new BigDecimal("22.3"));
 
-					System.out.println("Thread " + Thread.currentThread().getName() + " = " + result.get());
+					System.out.println("Dividend yield " + Thread.currentThread().getName() + " = " + result.get());
 				} catch (InterruptedException | ExecutionException | StockNotFoundException e) {
 					e.printStackTrace();
 				}
 
 			});
 			th.start();
+
+			//===========
+			final Thread th2 = new Thread(() -> {
+				Future<BigDecimal> result = null;
+				try {
+					result = controller.calculateDividendYield("POP", new BigDecimal("22.3"));
+
+					System.out.println("Dividend yield " + Thread.currentThread().getName() + " = " + result.get());
+				} catch (InterruptedException | ExecutionException | StockNotFoundException e) {
+					e.printStackTrace();
+				}
+
+			});
+			th2.start();
+
+
+
+
+
+
 			try {
-				TimeUnit.MILLISECONDS.sleep(100);
+				TimeUnit.MILLISECONDS.sleep(500);
 			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}

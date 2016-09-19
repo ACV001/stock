@@ -1,4 +1,4 @@
-package com.vvirlan.ss;
+package com.vvirlan.ss.exception;
 
 /**
  * Exception will be thrown when Dividend Yield calculation results in zero, but

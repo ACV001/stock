@@ -1,12 +1,17 @@
 package com.vvirlan.ss.controller;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import com.vvirlan.ss.StockNotFoundException;
+import com.vvirlan.ss.exception.StockNotFoundException;
+import com.vvirlan.ss.exception.ZeroDividendYieldException;
+import com.vvirlan.ss.model.Stock;
+import com.vvirlan.ss.model.Trade;
+import com.vvirlan.ss.model.TradeType;
 import com.vvirlan.ss.service.DividendCalculationService;
 import com.vvirlan.ss.service.StockService;
 import com.vvirlan.ss.service.TradeService;
@@ -61,4 +66,48 @@ public class SimpleStockControllerImpl implements SimpleStockController {
 			final BigDecimal fixedDividend, final long parValue) {
 		stockService.createStock(stockSymbol, type, lastDividend, fixedDividend, parValue);
 	}
+
+	@Override
+	public BigDecimal calculatePeRatio(final String stockName, final BigDecimal price)
+			throws StockNotFoundException, ZeroDividendYieldException {
+
+		return null;
+	}
+
+	@Override
+	public void recordTrade(final Stock stock, final long timestamp, final long qty, final BigDecimal price, final TradeType tradeType) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public List<Trade> findTradesInPastMinutes(final int pastMinutes) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BigDecimal calculateVolumeWeightedStockPrice(final List<BigDecimal> tradedPrices, final List<Integer> qty) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BigDecimal calculateGeometricMean(final List<BigDecimal> prices) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public BigDecimal calculateAllShareIndex() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+
+
+
+
 }
