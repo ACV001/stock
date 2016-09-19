@@ -20,4 +20,9 @@ public class StockServiceImpl implements StockService {
 		stockRepository.persistStock(newStock);
 	}
 
+	@Override
+	public Stock findStock(final String stockSymbol) {
+		return stockRepository.findStock(stockSymbol);
+	}
+
 }

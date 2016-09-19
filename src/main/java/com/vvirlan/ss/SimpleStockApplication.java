@@ -1,12 +1,15 @@
 package com.vvirlan.ss;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import com.vvirlan.ss.controller.SimpleStockController;
 import com.vvirlan.ss.exception.StockNotFoundException;
+import com.vvirlan.ss.exception.ZeroDividendYieldException;
 
 public class SimpleStockApplication {
 
@@ -26,14 +29,18 @@ public class SimpleStockApplication {
 		final SimpleStockController controller = factory.getController();
 
 		setupStocks(controller);
-		//Emulate multiple parallel requests...
+		setupTrades(controller);
+		// Emulate multiple parallel requests...
 		while (true) {
 
 			// calculateDividendYield
 			final Thread th = new Thread(() -> {
 				Future<BigDecimal> result = null;
 				try {
-					result = controller.calculateDividendYield("POP", new BigDecimal("22.3"));
+					final ThreadLocalRandom rand = ThreadLocalRandom.current();
+
+					result = controller.calculateDividendYield("POP",
+							new BigDecimal(String.valueOf(rand.nextDouble())));
 
 					System.out.println("Dividend yield " + Thread.currentThread().getName() + " = " + result.get());
 				} catch (InterruptedException | ExecutionException | StockNotFoundException e) {
@@ -43,27 +50,48 @@ public class SimpleStockApplication {
 			});
 			th.start();
 
-			//===========
+			// =====calculatePeRatio======
 			final Thread th2 = new Thread(() -> {
 				Future<BigDecimal> result = null;
 				try {
-					result = controller.calculateDividendYield("POP", new BigDecimal("22.3"));
+					final ThreadLocalRandom rand = ThreadLocalRandom.current();
+					result = controller.calculatePeRatio("POP", new BigDecimal(String.valueOf(rand.nextDouble())));
 
-					System.out.println("Dividend yield " + Thread.currentThread().getName() + " = " + result.get());
-				} catch (InterruptedException | ExecutionException | StockNotFoundException e) {
+					System.out.println("P/E Ratio " + Thread.currentThread().getName() + " = " + result.get());
+				} catch (InterruptedException | ExecutionException | StockNotFoundException
+						| ZeroDividendYieldException e) {
 					e.printStackTrace();
 				}
 
 			});
 			th2.start();
 
+			// ======recordTrade=====
+			final Thread th3 = new Thread(() -> {
+				final ThreadLocalRandom rand = ThreadLocalRandom.current();
+				controller.recordTrade("POP", new Date().getTime(), rand.nextLong(1000),
+						new BigDecimal(String.valueOf(rand.nextDouble())), "BUY");
+				System.out.println("Trade recorded " + Thread.currentThread().getName());
 
+			});
+			th3.start();
 
+			// ======calculateVolumeWeightedStockPrice=====
+			final Thread th4 = new Thread(() -> {
+				Future<BigDecimal> result = null;
+				result = controller.calculateVolumeWeightedStockPrice();
+				try {
+					System.out.println("Trade recorded " + Thread.currentThread().getName() + " = " + result.get());
+				} catch (InterruptedException | ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-
+			});
+			th4.start();
 
 			try {
-				TimeUnit.MILLISECONDS.sleep(500);
+				TimeUnit.MILLISECONDS.sleep(50);
 			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -78,5 +106,11 @@ public class SimpleStockApplication {
 		controller.createStock("GIN", "PREFERRED", 8, new BigDecimal("0.02"), 100L); // 2%
 		controller.createStock("JOE", "COMMON", 13, new BigDecimal("0"), 250L);
 
+	}
+
+	private void setupTrades(final SimpleStockController controller) {
+		controller.recordTrade("POP", new Date().getTime(), 500L, new BigDecimal("33.44"), "BUY");
+		controller.recordTrade("GIN", new Date().getTime(), 320L, new BigDecimal("30.44"), "SELL");
+		controller.recordTrade("JOE", new Date().getTime(), 100L, new BigDecimal("3.44"), "BUY");
 	}
 }

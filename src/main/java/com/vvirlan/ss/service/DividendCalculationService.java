@@ -55,6 +55,7 @@ public interface DividendCalculationService {
 	 *            A {@code java.util.List} of Quantities
 	 * @return the Volume Weighted Stock Price
 	 */
-	public BigDecimal calculateVolumeWeightedStockPrice(List<BigDecimal> tradedPrices, List<Integer> qty);
+	public BigDecimal calculateVolumeWeightedStockPrice(String stockName, List<BigDecimal> tradedPrices,
+			List<Long> qty);
 
 }

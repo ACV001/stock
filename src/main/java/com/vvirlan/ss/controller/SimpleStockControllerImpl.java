@@ -1,6 +1,7 @@
 package com.vvirlan.ss.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -68,46 +69,64 @@ public class SimpleStockControllerImpl implements SimpleStockController {
 	}
 
 	@Override
-	public BigDecimal calculatePeRatio(final String stockName, final BigDecimal price)
+	public Future<BigDecimal> calculatePeRatio(final String stockName, final BigDecimal price)
 			throws StockNotFoundException, ZeroDividendYieldException {
 
-		return null;
+		final Callable<BigDecimal> task = () -> {
+			return dividendService.calculatePeRatio(stockName, price);
+		};
+
+		return executor.submit(task);
+
 	}
 
 	@Override
-	public void recordTrade(final Stock stock, final long timestamp, final long qty, final BigDecimal price, final TradeType tradeType) {
-		// TODO Auto-generated method stub
+	public void recordTrade(final String stockSymbol, final long timestamp, final long qty, final BigDecimal price,
+			final String tradeType) {
+		final Stock stock = stockService.findStock(stockSymbol);
+		final Trade trade = new Trade(stock, timestamp, qty, price, TradeType.valueOf(tradeType));
+		tradeService.recordTrade(trade);
 
 	}
 
 	@Override
 	public List<Trade> findTradesInPastMinutes(final int pastMinutes) {
-		// TODO Auto-generated method stub
-		return null;
+		return tradeService.findTradesInPastMinutes(pastMinutes);
 	}
 
 	@Override
-	public BigDecimal calculateVolumeWeightedStockPrice(final List<BigDecimal> tradedPrices, final List<Integer> qty) {
-		// TODO Auto-generated method stub
-		return null;
+	public Future<BigDecimal> calculateVolumeWeightedStockPrice() {
+
+		final List<Trade> past5MinutesTrades = findTradesInPastMinutes(5);
+		final List<BigDecimal> tradePrices = new ArrayList<>();
+		final List<Long> qtys = new ArrayList<>();
+
+		if (past5MinutesTrades.isEmpty()) {
+
+		}
+
+		for (final Trade t : past5MinutesTrades) {
+			tradePrices.add(t.getPrice());
+			qtys.add(t.getQty());
+		}
+
+		final Callable<BigDecimal> task = () -> {
+			return dividendService.calculateVolumeWeightedStockPrice(tradePrices, qtys);
+		};
+
+		return executor.submit(task);
 	}
 
 	@Override
 	public BigDecimal calculateGeometricMean(final List<BigDecimal> prices) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
 	@Override
 	public BigDecimal calculateAllShareIndex() {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
-
-
-
-
-
-
 
 }

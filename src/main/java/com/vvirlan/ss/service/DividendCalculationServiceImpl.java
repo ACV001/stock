@@ -58,7 +58,7 @@ public class DividendCalculationServiceImpl implements DividendCalculationServic
 		if (dividendYield.compareTo(BigDecimal.ZERO) == 0) {
 			throw new ZeroDividendYieldException("Dividend Yield is zero. Cannot calculate P/E ratio");
 		}
-		return price.divide(dividendYield);
+		return price.divide(dividendYield, 4, RoundingMode.HALF_EVEN);
 	}
 
 	@Override
@@ -76,7 +76,8 @@ public class DividendCalculationServiceImpl implements DividendCalculationServic
 	}
 
 	@Override
-	public BigDecimal calculateVolumeWeightedStockPrice(final List<BigDecimal> tradedPrices, final List<Integer> qty) {
+	public BigDecimal calculateVolumeWeightedStockPrice(final String stockName, final List<BigDecimal> tradedPrices,
+			final List<Long> qty) {
 
 		if (tradedPrices == null || tradedPrices.isEmpty()) {
 			throw new IllegalArgumentException("Traded prices cannot be null nor empty");
@@ -86,12 +87,12 @@ public class DividendCalculationServiceImpl implements DividendCalculationServic
 			throw new IllegalArgumentException("Qtys cannot be null nor empty");
 		}
 
-		final Long sumQty = qty.stream().mapToLong(Integer::intValue).sum();
+		final Long sumQty = qty.stream().mapToLong(Long::longValue).sum();
 		BigDecimal total = new BigDecimal("0");
 		for (int i = 0; i < tradedPrices.size(); i++) {
 			total = total.add(tradedPrices.get(i).multiply(BigDecimal.valueOf(qty.get(i))));
 		}
-		return total.divide(BigDecimal.valueOf(sumQty));
+		return total.divide(BigDecimal.valueOf(sumQty), 4, RoundingMode.HALF_EVEN);
 	}
 
 	private void validateStockSymbolAndPrice(final String stockSymbol, final BigDecimal price) {

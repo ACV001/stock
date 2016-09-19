@@ -38,9 +38,9 @@ public class DividendCalculationServiceImplTest {
 		prices.add(new BigDecimal("1.5"));
 		prices.add(new BigDecimal("2.5"));
 
-		final List<Integer> qtys = new ArrayList<>();
-		qtys.add(new Integer(2));
-		qtys.add(new Integer(3));
+		final List<Long> qtys = new ArrayList<>();
+		qtys.add(new Long(2));
+		qtys.add(new Long(3));
 
 		final BigDecimal result = dividendCalculationService.calculateVolumeWeightedStockPrice(prices, qtys);
 		assertEquals(0, result.compareTo(new BigDecimal("2.1")));
@@ -49,7 +49,7 @@ public class DividendCalculationServiceImplTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void calculateVolumeWeightedStockPriceNeg4() {
-		dividendCalculationService.calculateVolumeWeightedStockPrice(Arrays.asList(), Arrays.asList(new Integer("1")));
+		dividendCalculationService.calculateVolumeWeightedStockPrice(Arrays.asList(), Arrays.asList(new Long("1")));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -65,7 +65,7 @@ public class DividendCalculationServiceImplTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void calculateVolumeWeightedStockPriceNeg1() {
-		dividendCalculationService.calculateVolumeWeightedStockPrice(null, Arrays.asList(new Integer("1")));
+		dividendCalculationService.calculateVolumeWeightedStockPrice(null, Arrays.asList(new Long("1")));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
