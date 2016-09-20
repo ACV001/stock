@@ -3,8 +3,14 @@ package com.vvirlan.ss.repository;
 import java.util.Collection;
 import java.util.List;
 
+import com.vvirlan.ss.model.Stock;
 import com.vvirlan.ss.model.Trade;
 
+/**
+ * The Trades repository. Has low level operations on Trade
+ * @author vvirlan
+ *
+ */
 public interface TradeRepository {
 
 	/**
@@ -35,12 +41,14 @@ public interface TradeRepository {
 	List<Trade> findTradesBySymbol(String stockSymbol);
 
 	/**
-	 * Finds all trades that have their timestamp in the range of the past
+	 * Finds all trades that have their time-stamp in the range of the past
 	 * {@code pastMinutes}
 	 *
 	 * @param pastMinutes
 	 *            the number of minutes to go back to find the {@code Trade}
+	 * @param stock
+	 *            the stock which trades are being looked for
 	 * @return a List of {@code Trade}s found or empty list. Never null
 	 */
-	List<Trade> findTradesInPastMinutes(int pastMinutes);
+	List<Trade> findTradesInPastMinutes(Stock stock, int pastMinutes);
 }

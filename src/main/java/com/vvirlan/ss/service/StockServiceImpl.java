@@ -1,9 +1,8 @@
 package com.vvirlan.ss.service;
 
-import java.math.BigDecimal;
+import java.util.Collection;
 
 import com.vvirlan.ss.model.Stock;
-import com.vvirlan.ss.model.StockType;
 import com.vvirlan.ss.repository.StockRepository;
 
 public class StockServiceImpl implements StockService {
@@ -14,15 +13,18 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public void createStock(final String stockSymbol, final String type, final long lastDividend,
-			final BigDecimal fixedDividend, final long parValue) {
-		final Stock newStock = new Stock(stockSymbol, StockType.valueOf(type), lastDividend, fixedDividend, parValue);
-		stockRepository.persistStock(newStock);
+	public Stock findStock(final String stockSymbol) {
+		return stockRepository.findStock(stockSymbol);
 	}
 
 	@Override
-	public Stock findStock(final String stockSymbol) {
-		return stockRepository.findStock(stockSymbol);
+	public void saveStock(final Stock stock) {
+		stockRepository.persistStock(stock);
+	}
+
+	@Override
+	public Collection<Stock> getAllStocks() {
+		return stockRepository.getAllStocks();
 	}
 
 }

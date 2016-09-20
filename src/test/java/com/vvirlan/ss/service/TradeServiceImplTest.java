@@ -85,14 +85,15 @@ public class TradeServiceImplTest extends EasyMockSupport {
 		final BigDecimal price = new BigDecimal("10.50");
 		final TradeType tradeType = TradeType.BUY;
 		final Stock s = new Stock("LOC", StockType.COMMON, 5L, new BigDecimal("0.3"), 4L);
+		stockService.saveStock(s);
 		Trade t = new Trade(s, now.getTime() + TestUtils.getMinutesAsMs(4), qty, price, tradeType);
 		tradeService.recordTrade(t);
 		t = new Trade(s, now.getTime(), qty, price, tradeType);
 		tradeService.recordTrade(t);
 		t = new Trade(s, now.getTime() - TestUtils.getMinutesAsMs(10), qty, price, tradeType);
 		tradeService.recordTrade(t);
-
-		final Collection<Trade> pastTrades = tradeService.findTradesInPastMinutes(5);
+		final String stockSymbol = "LOC";
+		final Collection<Trade> pastTrades = tradeService.findTradesInPastMinutes(stockService.findStock(stockSymbol), 5);
 		assertNotNull(pastTrades);
 		assertTrue(pastTrades.size() == 1);
 	}
@@ -104,14 +105,15 @@ public class TradeServiceImplTest extends EasyMockSupport {
 		final BigDecimal price = new BigDecimal("10.50");
 		final TradeType tradeType = TradeType.BUY;
 		final Stock s = new Stock("LOC", StockType.COMMON, 5L, new BigDecimal("0.3"), 4L);
+		stockService.saveStock(s);
 		Trade t = new Trade(s, now.getTime() - TestUtils.getMinutesAsMs(4), qty, price, tradeType);
 		tradeService.recordTrade(t);
 		t = new Trade(s, now.getTime(), qty, price, tradeType);
 		tradeService.recordTrade(t);
 		t = new Trade(s, now.getTime() - TestUtils.getMinutesAsMs(10), qty, price, tradeType);
 		tradeService.recordTrade(t);
-
-		final Collection<Trade> pastTrades = tradeService.findTradesInPastMinutes(5);
+		final String stockSymbol = "LOC";
+		final Collection<Trade> pastTrades = tradeService.findTradesInPastMinutes(stockService.findStock(stockSymbol),5);
 		assertNotNull(pastTrades);
 		assertTrue(pastTrades.size() == 2);
 	}
@@ -122,22 +124,26 @@ public class TradeServiceImplTest extends EasyMockSupport {
 		final long qty = 10;
 		final BigDecimal price = new BigDecimal("10.50");
 		final TradeType tradeType = TradeType.BUY;
-		final Stock s = new Stock("LOC", StockType.COMMON, 5L, new BigDecimal("0.3"), 4L);
-		final Trade t = new Trade(s, now.getTime(), qty, price, tradeType);
+		final Stock stock = new Stock("LOC", StockType.COMMON, 5L, new BigDecimal("0.3"), 4L);
+		stockService.saveStock(stock);
+		final Trade t = new Trade(stock, now.getTime(), qty, price, tradeType);
 		tradeService.recordTrade(t);
-		final Collection<Trade> pastTrades = tradeService.findTradesInPastMinutes(5);
+		final String stockSymbol = "LOC";
+		final Collection<Trade> pastTrades = tradeService.findTradesInPastMinutes(stockService.findStock(stockSymbol),5);
 		assertNotNull(pastTrades);
 		assertTrue(pastTrades.size() == 1);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findTradesInPastMinutes0Neg() {
-		tradeService.findTradesInPastMinutes(0);
+		final String stockSymbol = "POP";
+		tradeService.findTradesInPastMinutes(stockService.findStock(stockSymbol),0);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findTradesInPastMinutesNeg() {
-		tradeService.findTradesInPastMinutes(-1);
+		final String stockSymbol = "POP";
+		tradeService.findTradesInPastMinutes(stockService.findStock(stockSymbol),-1);
 	}
 
 	@Test

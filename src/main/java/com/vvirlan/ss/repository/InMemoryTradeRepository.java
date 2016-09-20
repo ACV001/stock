@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.vvirlan.ss.model.Stock;
 import com.vvirlan.ss.model.Trade;
 
 /**
@@ -32,14 +33,17 @@ public class InMemoryTradeRepository implements TradeRepository {
 	}
 
 	@Override
-	public List<Trade> findTradesInPastMinutes(final int pastMinutes) {
+	public List<Trade> findTradesInPastMinutes(final Stock stock, final int pastMinutes) {
 		final Date now = new Date();
 		final long pastMinutesAsMs = pastMinutes * 60 * 1000;
 		final long delta = now.getTime() - pastMinutesAsMs;
 		final List<Trade> tradesInPastMinutes = new ArrayList<>();
 		for (final Long timestamp : store.keySet()) {
 			if (timestamp >= delta && timestamp <= now.getTime()) {
-				tradesInPastMinutes.add(store.get(timestamp));
+				final Trade tr = store.get(timestamp);
+				if (tr.getStock().equals(stock)) {
+					tradesInPastMinutes.add(tr);
+				}
 			}
 		}
 		return tradesInPastMinutes;

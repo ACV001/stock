@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * The entity class representing a Stock
  *
- * @author A
+ * @author vvirlan
  *
  */
 public final class Stock {

@@ -1,6 +1,7 @@
 package com.vvirlan.ss.repository;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,26 +35,28 @@ public class InMemoryStockRepository implements StockRepository {
 
 	@Override
 	public List<Stock> getStocksByType(final StockType stockType) {
-		// TODO Auto-generated method stub
-		return null;
+
+		throw new IllegalStateException("Not Yet Implemented");
 	}
 
 	@Override
 	public List<Stock> getStocksByLastDividend(final Long lastDividend) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new IllegalStateException("Not Yet Implemented");
 	}
 
 	@Override
 	public List<Stock> getStocksByFixedDividend(final BigDecimal fixedDividend) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new IllegalStateException("Not Yet Implemented");
 	}
 
 	@Override
 	public List<Stock> getStocksByParValue(final Long parValue) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new IllegalStateException("Not Yet Implemented");
+	}
+
+	@Override
+	public Collection<Stock> getAllStocks() {
+		return store.values();
 	}
 
 }

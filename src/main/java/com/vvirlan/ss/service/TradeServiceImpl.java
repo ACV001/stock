@@ -3,6 +3,7 @@ package com.vvirlan.ss.service;
 import java.util.Collection;
 import java.util.List;
 
+import com.vvirlan.ss.model.Stock;
 import com.vvirlan.ss.model.Trade;
 import com.vvirlan.ss.repository.TradeRepository;
 
@@ -37,11 +38,11 @@ public class TradeServiceImpl implements TradeService {
 	}
 
 	@Override
-	public List<Trade> findTradesInPastMinutes(final int pastMinutes) {
+	public List<Trade> findTradesInPastMinutes(final Stock stock, final int pastMinutes) {
 		if (pastMinutes <= 0) {
 			throw new IllegalArgumentException("Past minutes must be >=0 !");
 		}
-		return tradeRepository.findTradesInPastMinutes(pastMinutes);
+		return tradeRepository.findTradesInPastMinutes(stock, pastMinutes);
 	}
 
 }

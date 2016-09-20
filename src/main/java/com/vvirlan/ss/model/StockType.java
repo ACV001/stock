@@ -2,8 +2,8 @@ package com.vvirlan.ss.model;
 
 /**
  * The enum representing Stock Type.
- * 
- * @author A
+ *
+ * @author vvirlan
  *
  */
 public enum StockType {

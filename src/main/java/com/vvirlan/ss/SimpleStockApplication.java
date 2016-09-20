@@ -11,6 +11,11 @@ import com.vvirlan.ss.controller.SimpleStockController;
 import com.vvirlan.ss.exception.StockNotFoundException;
 import com.vvirlan.ss.exception.ZeroDividendYieldException;
 
+/**
+ * Entry point to test the app
+ * @author vvirlan
+ *
+ */
 public class SimpleStockApplication {
 
 	public static void main(final String[] args) {
@@ -27,12 +32,12 @@ public class SimpleStockApplication {
 
 		final ControllerFactory factory = InMemoryControllerFactory.getInstance();
 		final SimpleStockController controller = factory.getController();
-
+		//Create some stocks
 		setupStocks(controller);
+		//Create some trades
 		setupTrades(controller);
 		// Emulate multiple parallel requests...
 		while (true) {
-
 			// calculateDividendYield
 			final Thread th = new Thread(() -> {
 				Future<BigDecimal> result = null;
@@ -79,9 +84,9 @@ public class SimpleStockApplication {
 			// ======calculateVolumeWeightedStockPrice=====
 			final Thread th4 = new Thread(() -> {
 				Future<BigDecimal> result = null;
-				result = controller.calculateVolumeWeightedStockPrice();
+				result = controller.calculateVolumeWeightedStockPrice("POP");
 				try {
-					System.out.println("Trade recorded " + Thread.currentThread().getName() + " = " + result.get());
+					System.out.println("calculateVolumeWeightedStockPrice " + Thread.currentThread().getName() + " = " + result.get());
 				} catch (InterruptedException | ExecutionException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -90,8 +95,22 @@ public class SimpleStockApplication {
 			});
 			th4.start();
 
+			// ===========calculateAllShareIndex===
+			final Thread th5 = new Thread(() -> {
+				Future<BigDecimal> result = null;
+				result = controller.calculateAllShareIndex();
+				try {
+					System.out.println("All share index " + Thread.currentThread().getName() + " = " + result.get());
+				} catch (InterruptedException | ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			});
+			th5.start();
+
 			try {
-				TimeUnit.MILLISECONDS.sleep(50);
+				TimeUnit.MILLISECONDS.sleep(500);
 			} catch (final InterruptedException e) {
 				e.printStackTrace();
 			}

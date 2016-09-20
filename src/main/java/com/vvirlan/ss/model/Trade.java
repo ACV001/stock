@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  * @author A
  *
  */
-public class Trade {
+public final class Trade {
 	private final Stock stock;
 	private final long timestamp;
 	private final long qty;

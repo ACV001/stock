@@ -8,6 +8,11 @@ import com.vvirlan.ss.exception.StockNotFoundException;
 import com.vvirlan.ss.exception.ZeroDividendYieldException;
 import com.vvirlan.ss.model.Trade;
 
+/**
+ * Service for Stock related operations
+ * @author vvirlan
+ *
+ */
 public interface SimpleStockController {
 
 	Future<BigDecimal> calculateDividendYield(String stockSymbol, BigDecimal price) throws StockNotFoundException;
@@ -21,12 +26,12 @@ public interface SimpleStockController {
 	void recordTrade(final String stockSymbol, final long timestamp, final long qty, final BigDecimal price,
 			final String tradeType);
 
-	List<Trade> findTradesInPastMinutes(int pastMinutes);
+	List<Trade> findTradesInPastMinutes(String stockSymbol, int pastMinutes);
 
-	public BigDecimal calculateGeometricMean(List<BigDecimal> prices);
 
-	public BigDecimal calculateAllShareIndex();
 
-	Future<BigDecimal> calculateVolumeWeightedStockPrice();
+	public Future<BigDecimal> calculateAllShareIndex();
+
+	Future<BigDecimal> calculateVolumeWeightedStockPrice(String stockName);
 
 }

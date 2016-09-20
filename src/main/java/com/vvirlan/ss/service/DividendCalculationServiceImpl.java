@@ -79,8 +79,12 @@ public class DividendCalculationServiceImpl implements DividendCalculationServic
 	public BigDecimal calculateVolumeWeightedStockPrice(final String stockName, final List<BigDecimal> tradedPrices,
 			final List<Long> qty) {
 
-		if (tradedPrices == null || tradedPrices.isEmpty()) {
-			throw new IllegalArgumentException("Traded prices cannot be null nor empty");
+		if (tradedPrices == null) {
+			throw new IllegalArgumentException("Traded prices cannot be null");
+		}
+
+		if (tradedPrices.isEmpty()) {
+			return BigDecimal.ONE;
 		}
 
 		if (qty == null || qty.isEmpty()) {

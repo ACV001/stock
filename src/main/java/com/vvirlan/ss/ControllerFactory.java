@@ -7,6 +7,11 @@ import com.vvirlan.ss.service.DividendCalculationService;
 import com.vvirlan.ss.service.StockService;
 import com.vvirlan.ss.service.TradeService;
 
+/**
+ * Implementation of the Abstract Factory pattern
+ * @author vvirlan
+ *
+ */
 public abstract class ControllerFactory {
 
 	protected SimpleStockController stockControllerInstance;

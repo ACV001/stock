@@ -13,6 +13,12 @@ import com.vvirlan.ss.service.StockServiceImpl;
 import com.vvirlan.ss.service.TradeService;
 import com.vvirlan.ss.service.TradeServiceImpl;
 
+/**
+ * Part of the Abstract Factory pattern
+ * @author vvirlan
+ *
+ */
+
 public class InMemoryControllerFactory extends ControllerFactory {
 
 	private static ControllerFactory instance;

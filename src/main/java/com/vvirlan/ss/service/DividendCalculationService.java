@@ -53,7 +53,7 @@ public interface DividendCalculationService {
 	 *            A {@code java.util.List} of traded prices
 	 * @param qty
 	 *            A {@code java.util.List} of Quantities
-	 * @return the Volume Weighted Stock Price
+	 * @return the Volume Weighted Stock Price or ZERO if tradedPrices is null
 	 */
 	public BigDecimal calculateVolumeWeightedStockPrice(String stockName, List<BigDecimal> tradedPrices,
 			List<Long> qty);

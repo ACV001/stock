@@ -2,8 +2,11 @@ package com.vvirlan.ss.controller;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -11,19 +14,13 @@ import java.util.concurrent.Future;
 import com.vvirlan.ss.exception.StockNotFoundException;
 import com.vvirlan.ss.exception.ZeroDividendYieldException;
 import com.vvirlan.ss.model.Stock;
+import com.vvirlan.ss.model.StockType;
 import com.vvirlan.ss.model.Trade;
 import com.vvirlan.ss.model.TradeType;
 import com.vvirlan.ss.service.DividendCalculationService;
 import com.vvirlan.ss.service.StockService;
 import com.vvirlan.ss.service.TradeService;
 
-/**
- * Application Controller. Entry point. Use this class to run sample tests
- * besides the unit tests provided
- *
- * @author A
- *
- */
 public class SimpleStockControllerImpl implements SimpleStockController {
 	private final DividendCalculationService dividendService;
 	private final TradeService tradeService;
@@ -58,14 +55,13 @@ public class SimpleStockControllerImpl implements SimpleStockController {
 
 	}
 
-	public static void main(final String[] args) {
 
-	}
 
 	@Override
 	public void createStock(final String stockSymbol, final String type, final long lastDividend,
 			final BigDecimal fixedDividend, final long parValue) {
-		stockService.createStock(stockSymbol, type, lastDividend, fixedDividend, parValue);
+		final Stock stock = new Stock(stockSymbol, StockType.valueOf(type), lastDividend, fixedDividend, parValue);
+		stockService.saveStock(stock);
 	}
 
 	@Override
@@ -90,43 +86,56 @@ public class SimpleStockControllerImpl implements SimpleStockController {
 	}
 
 	@Override
-	public List<Trade> findTradesInPastMinutes(final int pastMinutes) {
-		return tradeService.findTradesInPastMinutes(pastMinutes);
+	public List<Trade> findTradesInPastMinutes(final String stockSymbol, final int pastMinutes) {
+		final Stock stock = stockService.findStock(stockSymbol);
+		if (stock == null) {
+			return Collections.emptyList();
+		}
+		return tradeService.findTradesInPastMinutes(stock, pastMinutes);
 	}
 
 	@Override
-	public Future<BigDecimal> calculateVolumeWeightedStockPrice() {
+	public Future<BigDecimal> calculateVolumeWeightedStockPrice(final String stockName) {
 
-		final List<Trade> past5MinutesTrades = findTradesInPastMinutes(5);
+		final List<Trade> past5MinutesTrades = findTradesInPastMinutes(stockName, 5);
 		final List<BigDecimal> tradePrices = new ArrayList<>();
 		final List<Long> qtys = new ArrayList<>();
 
-		if (past5MinutesTrades.isEmpty()) {
-
-		}
-
-		for (final Trade t : past5MinutesTrades) {
-			tradePrices.add(t.getPrice());
-			qtys.add(t.getQty());
-		}
-
 		final Callable<BigDecimal> task = () -> {
-			return dividendService.calculateVolumeWeightedStockPrice(tradePrices, qtys);
+			for (final Trade t : past5MinutesTrades) {
+				tradePrices.add(t.getPrice());
+				qtys.add(t.getQty());
+			}
+
+			return dividendService.calculateVolumeWeightedStockPrice(stockName, tradePrices, qtys);
 		};
 
 		return executor.submit(task);
 	}
 
-	@Override
-	public BigDecimal calculateGeometricMean(final List<BigDecimal> prices) {
-
-		return null;
+	private BigDecimal calculateGeometricMean(final List<BigDecimal> prices) {
+		return dividendService.calculateGeometricMean(prices);
 	}
 
 	@Override
-	public BigDecimal calculateAllShareIndex() {
+	public Future<BigDecimal> calculateAllShareIndex() {
+		final Collection<Stock> allStocks = stockService.getAllStocks();
+		final List<BigDecimal> volumeWeightedStockPrices = new ArrayList<>();
+		for (final Stock stock : allStocks) {
+			try {
+				volumeWeightedStockPrices.add(calculateVolumeWeightedStockPrice(stock.getSymbol()).get());
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
-		return null;
+		}
+
+		final Callable<BigDecimal> task = () -> {
+			return calculateGeometricMean(volumeWeightedStockPrices);
+		};
+
+		return executor.submit(task);
 	}
 
 }

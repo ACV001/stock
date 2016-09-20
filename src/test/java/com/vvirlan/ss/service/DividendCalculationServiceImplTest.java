@@ -13,6 +13,8 @@ import org.junit.Test;
 import com.vvirlan.ss.TestUtils;
 import com.vvirlan.ss.exception.StockNotFoundException;
 import com.vvirlan.ss.exception.ZeroDividendYieldException;
+import com.vvirlan.ss.model.Stock;
+import com.vvirlan.ss.model.StockType;
 import com.vvirlan.ss.repository.InMemoryStockRepository;
 import com.vvirlan.ss.repository.StockRepository;
 
@@ -42,35 +44,43 @@ public class DividendCalculationServiceImplTest {
 		qtys.add(new Long(2));
 		qtys.add(new Long(3));
 
-		final BigDecimal result = dividendCalculationService.calculateVolumeWeightedStockPrice(prices, qtys);
+		final String stockSymbol = "POP";
+
+		final BigDecimal result = dividendCalculationService.calculateVolumeWeightedStockPrice(stockSymbol, prices, qtys);
 		assertEquals(0, result.compareTo(new BigDecimal("2.1")));
 
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+
 	public void calculateVolumeWeightedStockPriceNeg4() {
-		dividendCalculationService.calculateVolumeWeightedStockPrice(Arrays.asList(), Arrays.asList(new Long("1")));
+		final String stockSymbol = "POP";
+		final BigDecimal result = dividendCalculationService.calculateVolumeWeightedStockPrice(stockSymbol, Arrays.asList(), Arrays.asList(new Long("1")));
+		assertEquals(0, result.compareTo(BigDecimal.ZERO));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void calculateVolumeWeightedStockPriceNeg3() {
-		dividendCalculationService.calculateVolumeWeightedStockPrice(Arrays.asList(new BigDecimal("0")), null);
+		final String stockSymbol = "POP";
+		dividendCalculationService.calculateVolumeWeightedStockPrice(stockSymbol, Arrays.asList(new BigDecimal("0")), null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void calculateVolumeWeightedStockPriceNeg2() {
-		dividendCalculationService.calculateVolumeWeightedStockPrice(Arrays.asList(new BigDecimal("0")),
+		final String stockSymbol = "POP";
+		dividendCalculationService.calculateVolumeWeightedStockPrice(stockSymbol, Arrays.asList(new BigDecimal("0")),
 				Arrays.asList());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void calculateVolumeWeightedStockPriceNeg1() {
-		dividendCalculationService.calculateVolumeWeightedStockPrice(null, Arrays.asList(new Long("1")));
+		final String stockSymbol = "POP";
+		dividendCalculationService.calculateVolumeWeightedStockPrice(stockSymbol, null, Arrays.asList(new Long("1")));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void calculateVolumeWeightedStockPriceNeg() {
-		dividendCalculationService.calculateVolumeWeightedStockPrice(null, null);
+		final String stockSymbol = "POP";
+		dividendCalculationService.calculateVolumeWeightedStockPrice(stockSymbol, null, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -144,7 +154,9 @@ public class DividendCalculationServiceImplTest {
 	 */
 	@Test
 	public void calculateDividendYieldPreferredZeroDiv() throws StockNotFoundException {
-		stockService.createStock("ZER", "PREFERRED", 8, new BigDecimal("0"), 100L); // 2%
+		final Stock stock = new Stock("ZER", StockType.valueOf("PREFERRED"), 8, new BigDecimal("0"), 100L); // 2%, type, lastDividend, fixedDividend, parValue)
+		stockService.saveStock(stock);
+
 		final BigDecimal result = dividendCalculationService.calculateDividendYield("ZER", new BigDecimal("10"));
 		final BigDecimal exp = new BigDecimal("0");
 		assertEquals(0, exp.compareTo(result));

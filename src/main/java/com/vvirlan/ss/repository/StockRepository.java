@@ -1,11 +1,17 @@
 package com.vvirlan.ss.repository;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 
 import com.vvirlan.ss.model.Stock;
 import com.vvirlan.ss.model.StockType;
 
+/**
+ * The stock repository. Has low level operations on Stock
+ * @author vvirlan
+ *
+ */
 public interface StockRepository {
 
 	/**
@@ -55,4 +61,11 @@ public interface StockRepository {
 	 * @return
 	 */
 	public List<Stock> getStocksByParValue(Long parValue);
+
+
+	/**
+	 * Returns all stocks in the repository
+	 * @return
+	 */
+	public Collection<Stock> getAllStocks();
 }
